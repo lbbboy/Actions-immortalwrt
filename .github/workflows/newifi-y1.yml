@@ -10,20 +10,22 @@
 # See /LICENSE for more information.
 #
 
-name: immortalwrt Builder
+name: newifi-y1
 
 on:
   repository_dispatch:
   workflow_dispatch:
+  schedule:
+    - cron: "0 8 1 * *"
 
 permissions:
   contents: write
 
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
-  REPO_BRANCH: master
+  REPO_BRANCH: openwrt-24.10
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: .config
+  CONFIG_FILE: newifi-d2.config
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: false
@@ -64,7 +66,7 @@ jobs:
       working-directory: /workdir
       run: |
         df -hT $PWD
-        git clone $REPO_URL -b $REPO_BRANCH openwrt
+        git clone $REPO_URL -b $REPO_BRANCH --single-branch openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: Load custom feeds
@@ -158,7 +160,7 @@ jobs:
       uses: Mattraks/delete-workflow-runs@main
       with:
         retain_days: 1
-        keep_minimum_runs: 3
+        keep_minimum_runs: 0
 
     - name: Remove old Releases
       uses: dev-drprasad/delete-older-releases@master
